@@ -145,7 +145,13 @@ LOOP FOREVER:
    trivial (typo, einops pattern, shape off-by-one), fix and re-run. If the idea is
    fundamentally broken, log `crash` and move on.
 7. Record the result in `results.tsv`.
-8. Decision:
+7b. **Archive for top-K** (any run, not only "keep"): if the `.pt` is < 1 MB, snapshot it:
+    `uv run archive_topk.py --acc <acc> --commit <hash> --desc "<short desc>"`
+    This keeps the top-5 runs by test accuracy in `./submissions/` (each with its `.pt` +
+    `.csv`) and maintains `submissions/leaderboard.tsv`, for multi-upload to Kaggle. A run can
+    be `discard` for the git/keep decision but still earn a top-5 archive slot — archive it
+    regardless of the keep/discard decision, as long as it is < 1 MB.
+8. Decision (git branch advance):
    - If `.pt` < 1 MB **AND** accuracy > current best-kept accuracy → **KEEP** (advance the
      branch, keep the commit).
    - Otherwise → **DISCARD**: `git reset --hard <last-kept-commit>`.

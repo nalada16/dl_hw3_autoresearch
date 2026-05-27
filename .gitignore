@@ -13,3 +13,6 @@ results.tsv
 # Submission artifacts (regenerated from the best experiment)
 r14725055_submission.pt
 r14725055_submission.csv
+
+# Top-K archived submissions (kept for Kaggle multi-upload)
+submissions/
