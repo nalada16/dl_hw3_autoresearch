@@ -1,2 +1,15 @@
-dataset/cifar-10-batches-py
-dataset/cifar-10-python.tar.gz
+# Python env
+.venv/
+__pycache__/
+*.pyc
+
+# CIFAR-10 data (auto-downloaded by torchvision)
+dataset/
+
+# autoresearch run artifacts (regenerated each experiment)
+run.log
+results.tsv
+
+# Submission artifacts (regenerated from the best experiment)
+r14725055_submission.pt
+r14725055_submission.csv
