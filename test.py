@@ -103,12 +103,13 @@ class myFFN(nn.Module):
 # ║  DO NOT use torch.nn.MultiheadAttention()               ║
 # ╚══════════════════════════════════════════════════════════╝
 class myAttention(nn.Module):
-    def __init__(self, input_dim, heads, head_dim):
+    def __init__(self, input_dim, heads, head_dim, attn_dropout=0.1):
         super().__init__()
         self.heads = heads
         self.head_dim = head_dim
         inner_dim = heads * head_dim
         self.scale = head_dim ** -0.5
+        self.attn_drop = nn.Dropout(attn_dropout)
 
         self.to_qkv = nn.Linear(input_dim, inner_dim * 3, bias=False)
         self.to_out = nn.Linear(inner_dim, input_dim)
@@ -124,7 +125,7 @@ class myAttention(nn.Module):
         )
 
         dots = torch.einsum('bhid,bhjd->bhij', q, k) * self.scale
-        attn = dots.softmax(dim=-1)
+        attn = self.attn_drop(dots.softmax(dim=-1))
 
         out = torch.einsum('bhij,bhjd->bhid', attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
