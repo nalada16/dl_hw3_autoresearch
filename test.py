@@ -208,7 +208,7 @@ model = myViT(
     patch_size  = patch_size,
     hidden_dim  = 64,   # ← Token embedding 維度
     heads       = 4,    # ← Attention head 數量
-    head_dim    = 64,   # ← 每個 head 的維度
+    head_dim    = 16,   # ← 每個 head 的維度
     mlp_dim     = 128,  # ← FFN 中間層維度
     num_classes = num_classes,
 ).to(device)
