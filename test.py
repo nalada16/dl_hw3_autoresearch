@@ -151,7 +151,7 @@ class myTransformer(nn.Module):
         for _ in range(num_layers):
             self.layers.append(nn.ModuleList([
                 nn.LayerNorm(dim),
-                myAttention(dim, heads, dim_head, attn_dropout=0.22),
+                myAttention(dim, heads, dim_head, attn_dropout=0.20),
                 nn.Dropout(0.05),
                 nn.LayerNorm(dim),
                 myFFN(dim, mlp_dim),
