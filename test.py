@@ -147,14 +147,11 @@ class myTransformer(nn.Module):
 
         num_layers = 9  # ← 可調整層數
 
-        # Reverse layer-wise attn_dropout: high early (form patterns), low late (sharp decisions).
-        # Linear ramp 0.30 -> 0.15 across 9 layers.
         self.layers = nn.ModuleList([])
-        for i in range(num_layers):
-            attn_dp = 0.30 - (0.30 - 0.15) * i / max(1, num_layers - 1)
+        for _ in range(num_layers):
             self.layers.append(nn.ModuleList([
                 nn.LayerNorm(dim),
-                myAttention(dim, heads, dim_head, attn_dropout=attn_dp),
+                myAttention(dim, heads, dim_head, attn_dropout=0.22),
                 nn.Dropout(0.05),
                 nn.LayerNorm(dim),
                 myFFN(dim, mlp_dim),
