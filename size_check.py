@@ -40,8 +40,8 @@ NUM_CLASSES = 10
 
 # Current best config — update this after each new "keep"
 BASELINE = dict(layers=9, heads=16, head_dim=4, mlp_dim=72, hidden_dim=64)
-BASELINE_COMMIT = "dd926d4"
-BASELINE_ACC    = 0.6842
+BASELINE_COMMIT = "4332098"
+BASELINE_ACC    = 0.6851
 
 
 # ── Model classes (same as test.py, no training side-effects) ────────────────
