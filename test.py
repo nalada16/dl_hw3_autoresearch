@@ -108,6 +108,7 @@ class myAttention(nn.Module):
         self.heads = heads
         self.head_dim = head_dim
         inner_dim = heads * head_dim
+        self.scale = head_dim ** -0.5
         self.attn_drop = nn.Dropout(attn_dropout)
 
         self.to_qkv = nn.Linear(input_dim, inner_dim * 3, bias=False)
@@ -116,11 +117,6 @@ class myAttention(nn.Module):
         nn.init.normal_(self.to_qkv.weight, std=0.02)
         nn.init.normal_(self.to_out.weight, std=0.02)
         nn.init.zeros_(self.to_out.bias)
-
-        # Per-head learnable temperature (each head chooses its own attention sharpness).
-        # Init = head_dim^-0.5 (standard scaling); free to adapt independently per head.
-        init_scale = head_dim ** -0.5
-        self.head_temp = nn.Parameter(torch.full((heads, 1, 1), init_scale))
 
     def forward(self, x):
         b, n, _ = x.shape
@@ -132,8 +128,7 @@ class myAttention(nn.Module):
             lambda t: rearrange(t, 'b n (h d) -> b h n d', h=h), qkv
         )
 
-        # Per-head temperature instead of fixed sqrt(d) scaling
-        dots = torch.einsum('bhid,bhjd->bhij', q, k) * self.head_temp
+        dots = torch.einsum('bhid,bhjd->bhij', q, k) * self.scale
         attn = self.attn_drop(dots.softmax(dim=-1))
 
         out = torch.einsum('bhij,bhjd->bhid', attn, v)
