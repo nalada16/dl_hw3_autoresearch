@@ -208,8 +208,8 @@ class myViT(nn.Module):
 # ╔══════════════════════════════════════════════════════════╗
 # ║  Part 9: 超參數  [MODIFIABLE]                            ║
 # ╚══════════════════════════════════════════════════════════╝
-torch.manual_seed(71)
-torch.cuda.manual_seed_all(71)
+torch.manual_seed(251)
+torch.cuda.manual_seed_all(251)
 
 model = myViT(
     input_size  = input_size,
