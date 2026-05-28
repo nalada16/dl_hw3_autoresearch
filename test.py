@@ -158,16 +158,12 @@ class myTransformer(nn.Module):
                 nn.Dropout(0.05),
             ]))
 
-        # LayerScale gamma=1.0: degenerates to no-op initially; channels can learn re-weighting.
-        self.gamma_attn = nn.Parameter(torch.ones(num_layers, dim))
-        self.gamma_ffn  = nn.Parameter(torch.ones(num_layers, dim))
-
         self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
-        for i, (norm1, attn, drop1, norm2, ffn, drop2) in enumerate(self.layers):
-            x = self.gamma_attn[i] * drop1(attn(norm1(x))) + x
-            x = self.gamma_ffn[i]  * drop2(ffn(norm2(x)))  + x
+        for norm1, attn, drop1, norm2, ffn, drop2 in self.layers:
+            x = drop1(attn(norm1(x))) + x
+            x = drop2(ffn(norm2(x))) + x
         return self.norm(x)
 
 
