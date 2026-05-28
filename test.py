@@ -145,7 +145,7 @@ class myTransformer(nn.Module):
     def __init__(self, dim, heads, dim_head, mlp_dim):
         super().__init__()
 
-        num_layers = 9  # ← 可調整層數
+        num_layers = 5  # ← 可調整層數
 
         self.layers = nn.ModuleList([])
         for _ in range(num_layers):
