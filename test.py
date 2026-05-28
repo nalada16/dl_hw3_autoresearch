@@ -160,11 +160,21 @@ class myTransformer(nn.Module):
 
         self.norm = nn.LayerNorm(dim)
 
+        # Learnable mix between trained CLS and mean-pooled patches.
+        # sigmoid(mix_logit) starts at 0.5 -> equally weighted; learns to favor either.
+        self.cls_mix_logit = nn.Parameter(torch.tensor(0.0))
+
     def forward(self, x):
         for norm1, attn, drop1, norm2, ffn, drop2 in self.layers:
             x = drop1(attn(norm1(x))) + x
             x = drop2(ffn(norm2(x))) + x
-        return self.norm(x)
+        x = self.norm(x)
+        # Hybrid CLS aggregation: α * trained_CLS + (1-α) * mean_of_patches
+        alpha = torch.sigmoid(self.cls_mix_logit)
+        cls_out    = x[:, 0:1]
+        patch_mean = x[:, 1:].mean(dim=1, keepdim=True)
+        mixed = alpha * cls_out + (1.0 - alpha) * patch_mean
+        return torch.cat([mixed, x[:, 1:]], dim=1)
 
 
 # ─────────────────────────────────────────────────────────────
