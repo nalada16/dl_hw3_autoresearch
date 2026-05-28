@@ -83,27 +83,18 @@ class myTokenization(nn.Module):
 # ║  FFN(x) = max(0, x W1 + b1) W2 + b2                    ║
 # ╚══════════════════════════════════════════════════════════╝
 class myFFN(nn.Module):
-    """Parallel dual-branch FFN. Each branch is a standard FFN(x)=max(0,xW1+b1)W2+b2
-    (still per-spec). Outputs are summed. Two narrower branches at hidden_dim//2
-    each are roughly param-matched to one wider branch at full hidden_dim, but
-    give the layer two complementary feature transformations."""
     def __init__(self, input_dim, hidden_dim):
         super().__init__()
-        branch_dim = hidden_dim // 2
 
-        self.branch_a = nn.Sequential(
-            nn.Linear(input_dim, branch_dim),
+        self.ffn = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(branch_dim, input_dim),
-        )
-        self.branch_b = nn.Sequential(
-            nn.Linear(input_dim, branch_dim),
-            nn.ReLU(),
-            nn.Linear(branch_dim, input_dim),
+            nn.Linear(hidden_dim, input_dim)
         )
 
     def forward(self, x):
-        return self.branch_a(x) + self.branch_b(x)
+        out = self.ffn(x)
+        return out
 
 
 # ╔══════════════════════════════════════════════════════════╗
