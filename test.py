@@ -145,7 +145,11 @@ class myTransformer(nn.Module):
     def __init__(self, dim, heads, dim_head, mlp_dim):
         super().__init__()
 
-        num_layers = 9  # ← 可調整層數
+        num_layers = 10  # ← 可調整層數
+
+        # Pair-shared FFN: layers (0,1), (2,3), ... share one FFN each (5 unique for 10 layers).
+        num_ffn_groups = (num_layers + 1) // 2
+        self.shared_ffns = nn.ModuleList([myFFN(dim, mlp_dim) for _ in range(num_ffn_groups)])
 
         self.layers = nn.ModuleList([])
         for _ in range(num_layers):
@@ -154,14 +158,14 @@ class myTransformer(nn.Module):
                 myAttention(dim, heads, dim_head, attn_dropout=0.22),
                 nn.Dropout(0.05),
                 nn.LayerNorm(dim),
-                myFFN(dim, mlp_dim),
                 nn.Dropout(0.05),
             ]))
 
         self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
-        for norm1, attn, drop1, norm2, ffn, drop2 in self.layers:
+        for i, (norm1, attn, drop1, norm2, drop2) in enumerate(self.layers):
+            ffn = self.shared_ffns[i // 2]
             x = drop1(attn(norm1(x))) + x
             x = drop2(ffn(norm2(x))) + x
         return self.norm(x)
@@ -214,7 +218,7 @@ model = myViT(
     hidden_dim  = 64,   # ← Token embedding 維度
     heads       = 16,   # ← Attention head 數量
     head_dim    = 4,    # ← 每個 head 的維度
-    mlp_dim     = 72,   # ← FFN 中間層維度
+    mlp_dim     = 88,   # ← FFN 中間層維度
     num_classes = num_classes,
 ).to(device)
 
