@@ -35,9 +35,53 @@ To set up a new run, work with the user to:
    must print `True` (GPU: RTX 3060 Ti). CIFAR-10 auto-downloads on the first run.
 5. **Initialize `results.tsv`**: create it with just the header row. The baseline is recorded
    after the first run.
-6. **Confirm and go.**
+6. **Update `size_check.py` baseline**: open `size_check.py` and update the `BASELINE` dict
+   and `BASELINE_COMMIT` / `BASELINE_ACC` constants to reflect the current best-kept config.
+   This ensures the comparison and scan outputs are anchored to the right starting point.
+7. **Confirm and go.**
 
 Once you get confirmation, kick off the experimentation.
+
+## Tools
+
+### `size_check.py` — pre-flight size estimator
+
+**Use this BEFORE editing test.py** whenever a proposed change might affect model size.
+It instantiates the model, saves to a temp `.pt`, and reports exact bytes + budget status
+in under one second — far faster than running a full training to discover the model is over.
+
+```bash
+# Check a specific config (auto-compares vs current best)
+uv run size_check.py --layers 7 --heads 16 --head_dim 4 --mlp 128
+
+# See param count broken down by component
+uv run size_check.py --layers 7 --heads 16 --head_dim 4 --mlp 128 --breakdown
+
+# Scan a grid — shows all configs that fit under 1 MB
+uv run size_check.py --scan
+```
+
+Key output fields:
+- `.pt size` — exact file size in bytes (the authoritative grading metric)
+- `left` — bytes remaining before hitting 1 MB cap (~= left // 4 params of headroom)
+- `d_bytes` — difference vs current best (positive = larger)
+
+**When to skip it**: changes that don't touch `layers`, `heads`, `head_dim`, `mlp_dim`,
+or `hidden_dim` (e.g. pure dropout value changes, init changes) cost 0 bytes — no check needed.
+
+**After a new KEEP**: update `BASELINE`, `BASELINE_COMMIT`, `BASELINE_ACC` in `size_check.py`
+so future comparisons stay anchored to the new best.
+
+### `archive_topk.py` — top-K submission archiver
+
+```bash
+uv run archive_topk.py --acc <acc> --commit <hash> --desc "<short desc>"
+```
+
+Snapshots `.pt` + `.csv` into `submissions/`, keeps top-5 by accuracy.
+Run this for every sub-1MB result regardless of keep/discard.
+
+---
 
 ## Experimentation
 
@@ -137,27 +181,30 @@ The loop runs on the dedicated branch `autoresearch/<tag>`.
 LOOP FOREVER:
 
 1. Look at the git state: current branch/commit, and the current best-kept accuracy.
-2. Edit ONE of the four MODIFIABLE regions in `test.py` with an experimental idea.
-3. `git commit` (only `test.py`).
-4. Run: `uv run test.py > run.log 2>&1`
-5. Read results: `grep "Accuracy:" run.log` and `ls -l r14725055_submission.pt`.
-6. If the grep is empty, the run crashed. `tail -n 50 run.log` to read the traceback. If it's
+2. Design the next experiment. **If it changes `layers`/`heads`/`head_dim`/`mlp_dim`/`hidden_dim`,
+   run `uv run size_check.py --layers X --heads Y ...` first.** If the output shows `[!!] OVER`,
+   abandon the idea immediately — do not edit, do not commit.
+3. Edit ONE of the four MODIFIABLE regions in `test.py` with an experimental idea.
+4. `git commit` (only `test.py`).
+5. Run: `uv run test.py > run.log 2>&1`
+6. Read results: `grep "Accuracy:" run.log` and `ls -l r14725055_submission.pt`.
+7. If the grep is empty, the run crashed. `tail -n 50 run.log` to read the traceback. If it's
    trivial (typo, einops pattern, shape off-by-one), fix and re-run. If the idea is
    fundamentally broken, log `crash` and move on.
-7. Record the result in `results.tsv`.
-7b. **Archive for top-K** (any run, not only "keep"): if the `.pt` is < 1 MB, snapshot it:
+8. Record the result in `results.tsv`.
+8b. **Archive for top-K** (any run, not only "keep"): if the `.pt` is < 1 MB, snapshot it:
     `uv run archive_topk.py --acc <acc> --commit <hash> --desc "<short desc>"`
     This keeps the top-5 runs by test accuracy in `./submissions/` (each with its `.pt` +
     `.csv`) and maintains `submissions/leaderboard.tsv`, for multi-upload to Kaggle. A run can
     be `discard` for the git/keep decision but still earn a top-5 archive slot — archive it
     regardless of the keep/discard decision, as long as it is < 1 MB.
-8. Decision (git branch advance):
+9. Decision (git branch advance):
    - If `.pt` < 1 MB **AND** accuracy > current best-kept accuracy → **KEEP** (advance the
-     branch, keep the commit).
+     branch, keep the commit). Also update `BASELINE` in `size_check.py`.
    - Otherwise → **DISCARD**: `git reset --hard <last-kept-commit>`.
    (The `.pt`/`.csv` are gitignored, so reset never touches them — the on-disk `.pt` is only
    used for the size check of the most recent run.)
-9. Repeat.
+10. Repeat.
 
 **Timeout**: a run is ~a few minutes. If one exceeds ~20 minutes, kill it and treat it as a
 failure (discard + revert).
