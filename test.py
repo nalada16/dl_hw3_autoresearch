@@ -164,7 +164,11 @@ class myTransformer(nn.Module):
         for norm1, attn, drop1, norm2, ffn, drop2 in self.layers:
             x = drop1(attn(norm1(x))) + x
             x = drop2(ffn(norm2(x))) + x
-        return self.norm(x)
+        x = self.norm(x)
+        # Replace CLS slot (position 0) with mean of patch tokens.
+        # Part 8 takes x[:, 0] to feed mlp_head; this swaps trained-CLS for mean-pool.
+        patch_mean = x[:, 1:].mean(dim=1, keepdim=True)  # (B, 1, D)
+        return torch.cat([patch_mean, x[:, 1:]], dim=1)
 
 
 # ─────────────────────────────────────────────────────────────
