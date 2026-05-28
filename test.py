@@ -141,21 +141,40 @@ class myAttention(nn.Module):
 # ║  Part 7: myTransformer  [MODIFIABLE]                    ║
 # ║  自由設計層數、Dropout、LayerNorm 位置等                  ║
 # ╚══════════════════════════════════════════════════════════╝
+class DropPath(nn.Module):
+    """Stochastic depth — drops the entire residual contribution for some samples."""
+    def __init__(self, drop_prob=0.0):
+        super().__init__()
+        self.drop_prob = drop_prob
+    def forward(self, x):
+        if self.drop_prob == 0.0 or not self.training:
+            return x
+        keep_prob = 1.0 - self.drop_prob
+        mask_shape = (x.shape[0],) + (1,) * (x.ndim - 1)
+        mask = keep_prob + torch.rand(mask_shape, dtype=x.dtype, device=x.device)
+        mask.floor_()
+        return x.div(keep_prob) * mask
+
+
 class myTransformer(nn.Module):
     def __init__(self, dim, heads, dim_head, mlp_dim):
         super().__init__()
 
         num_layers = 9  # ← 可調整層數
 
+        # Linearly scaled DropPath rate: 0 at first layer, dp_max at last layer.
+        dp_max = 0.10
+
         self.layers = nn.ModuleList([])
-        for _ in range(num_layers):
+        for i in range(num_layers):
+            dpr = dp_max * i / max(1, num_layers - 1)
             self.layers.append(nn.ModuleList([
                 nn.LayerNorm(dim),
                 myAttention(dim, heads, dim_head, attn_dropout=0.22),
-                nn.Dropout(0.05),
+                DropPath(dpr),
                 nn.LayerNorm(dim),
                 myFFN(dim, mlp_dim),
-                nn.Dropout(0.05),
+                DropPath(dpr),
             ]))
 
         self.norm = nn.LayerNorm(dim)
