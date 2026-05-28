@@ -1,6 +1,6 @@
 accuracy	size_mb	size_bytes	commit	pt_file	csv_file	description
+0.6759	0.979	1026201	24615ab	submissions\r14725055_acc0.6759_24615ab.pt	submissions\r14725055_acc0.6759_24615ab.csv	8L mlp=96 embed-fix depth helps after noise removal
 0.6752	0.972	1018731	26762fc	submissions\r14725055_acc0.6752_26762fc.pt	submissions\r14725055_acc0.6752_26762fc.csv	embedding init std=0.02 +1.53pp new best
 0.6599	0.972	1018731	cd97b79	submissions\r14725055_acc0.6599_cd97b79.pt	submissions\r14725055_acc0.6599_cd97b79.csv	7L heads=16 attn=0.22 trans=0.05 new best
 0.6526	0.972	1018731	aba9c99	submissions\r14725055_acc0.6526_aba9c99.pt	submissions\r14725055_acc0.6526_aba9c99.csv	7L heads=16 attn=0.20 trans=0.05
 0.6522	0.972	1018731	431d87d	submissions\r14725055_acc0.6522_431d87d.pt	submissions\r14725055_acc0.6522_431d87d.csv	7L heads=16 head_dim=4 attn=0.15 trans=0.05 synergy
-0.6511	0.972	1018731	8c5f16c	submissions\r14725055_acc0.6511_8c5f16c.pt	submissions\r14725055_acc0.6511_8c5f16c.csv	7L attn_dropout=0.15 transformer_dropout=0.05 asymmetric
