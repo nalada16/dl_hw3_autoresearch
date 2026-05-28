@@ -218,10 +218,27 @@ model = myViT(
     num_classes = num_classes,
 ).to(device)
 
-# Smaller-variance init for CLS + positional embedding (default torch.randn is std=1, too large)
+# Smaller-variance init for CLS, and 2D-sinusoidal init for positional embedding.
+# Patches form an 8x8 grid; encode row + col separately to give the model 2D inductive bias.
 with torch.no_grad():
-    nn.init.normal_(model.cls_token,     std=0.02)
-    nn.init.normal_(model.pos_embedding, std=0.02)
+    nn.init.normal_(model.cls_token, std=0.02)
+
+    pe = torch.zeros_like(model.pos_embedding)             # (1, 65, 64)
+    pe[0, 0] = torch.randn(64) * 0.02                       # CLS slot stays small-random
+    h_dim = model.pos_embedding.shape[-1]
+    grid = int(sqrt(64))                                    # 8
+    for k in range(64):
+        row, col = k // grid, k % grid
+        # First half encodes row, second half encodes col (sin/cos pairs)
+        for d in range(h_dim // 4):
+            scale = 10000.0 ** (-2 * d / (h_dim // 2))
+            pe[0, k + 1, 2*d]               = float(torch.sin(torch.tensor(row * scale)))
+            pe[0, k + 1, 2*d + 1]           = float(torch.cos(torch.tensor(row * scale)))
+            pe[0, k + 1, h_dim//2 + 2*d]    = float(torch.sin(torch.tensor(col * scale)))
+            pe[0, k + 1, h_dim//2 + 2*d + 1]= float(torch.cos(torch.tensor(col * scale)))
+    # Rescale to match successful std=0.02 magnitude
+    pe[0, 1:] = pe[0, 1:] * (0.02 / pe[0, 1:].std())
+    model.pos_embedding.copy_(pe)
 
 # 模型大小確認（目標 < 1MB = 250K params）
 total_params = sum(p.numel() for p in model.parameters())
