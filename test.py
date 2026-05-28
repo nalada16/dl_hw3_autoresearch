@@ -91,11 +91,6 @@ class myFFN(nn.Module):
             nn.ReLU(),
             nn.Linear(hidden_dim, input_dim)
         )
-        # GPT-2 residual init: scale down the FFN output projection
-        # so each block writes a small contribution to the residual stream.
-        # Keeps first Linear default (correct for ReLU input).
-        nn.init.normal_(self.ffn[2].weight, std=0.02)
-        nn.init.zeros_(self.ffn[2].bias)
 
     def forward(self, x):
         out = self.ffn(x)
