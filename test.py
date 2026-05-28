@@ -145,7 +145,7 @@ class myTransformer(nn.Module):
     def __init__(self, dim, heads, dim_head, mlp_dim):
         super().__init__()
 
-        num_layers = 6  # ← 可調整層數
+        num_layers = 9  # ← 可調整層數
 
         self.layers = nn.ModuleList([])
         for _ in range(num_layers):
@@ -211,10 +211,10 @@ class myViT(nn.Module):
 model = myViT(
     input_size  = input_size,
     patch_size  = patch_size,
-    hidden_dim  = 80,   # ← Token embedding 維度
+    hidden_dim  = 64,   # ← Token embedding 維度
     heads       = 16,   # ← Attention head 數量
-    head_dim    = 5,    # ← 每個 head 的維度
-    mlp_dim     = 64,   # ← FFN 中間層維度
+    head_dim    = 4,    # ← 每個 head 的維度
+    mlp_dim     = 72,   # ← FFN 中間層維度
     num_classes = num_classes,
 ).to(device)
 
