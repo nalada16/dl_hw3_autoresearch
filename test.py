@@ -114,10 +114,8 @@ class myAttention(nn.Module):
         self.to_qkv = nn.Linear(input_dim, inner_dim * 3, bias=False)
         self.to_out = nn.Linear(inner_dim, input_dim)
         # GPT-2 style init: smaller variance for stable attention
-        # T-Fixup style: zero-init out projection so attention initially contributes 0
-        # (residual = identity at init, like LayerScale gamma=0 but without extra params)
         nn.init.normal_(self.to_qkv.weight, std=0.02)
-        nn.init.zeros_(self.to_out.weight)
+        nn.init.normal_(self.to_out.weight, std=0.02)
         nn.init.zeros_(self.to_out.bias)
 
     def forward(self, x):
