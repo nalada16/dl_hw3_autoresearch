@@ -158,12 +158,22 @@ class myTransformer(nn.Module):
                 nn.Dropout(0.05),
             ]))
 
+        # Learnable per-layer weights for CLS aggregation (softmax-normalized).
+        # zero-init -> uniform softmax -> equivalent to mean; learns to emphasize useful layers.
+        self.cls_layer_weights = nn.Parameter(torch.zeros(num_layers))
+
         self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
+        cls_per_layer = []
         for norm1, attn, drop1, norm2, ffn, drop2 in self.layers:
             x = drop1(attn(norm1(x))) + x
             x = drop2(ffn(norm2(x))) + x
+            cls_per_layer.append(x[:, 0:1])
+        # Weighted sum of CLS across layers, placed back at position 0.
+        weights = self.cls_layer_weights.softmax(dim=0)
+        cls_combined = sum(w * c for w, c in zip(weights, cls_per_layer))
+        x = torch.cat([cls_combined, x[:, 1:]], dim=1)
         return self.norm(x)
 
 
