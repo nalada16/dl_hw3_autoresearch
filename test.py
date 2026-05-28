@@ -219,12 +219,9 @@ model = myViT(
 ).to(device)
 
 # Smaller-variance init for CLS + positional embedding (default torch.randn is std=1, too large)
-# Also init the classification head with the same small variance for consistent gradient flow.
 with torch.no_grad():
-    nn.init.normal_(model.cls_token,        std=0.02)
-    nn.init.normal_(model.pos_embedding,    std=0.02)
-    nn.init.normal_(model.mlp_head[1].weight, std=0.02)
-    nn.init.zeros_(model.mlp_head[1].bias)
+    nn.init.normal_(model.cls_token,     std=0.02)
+    nn.init.normal_(model.pos_embedding, std=0.02)
 
 # 模型大小確認（目標 < 1MB = 250K params）
 total_params = sum(p.numel() for p in model.parameters())
