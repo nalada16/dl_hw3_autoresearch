@@ -158,7 +158,86 @@ AutoML（HPO）通常只能處理：
 
 ---
 
-## 六、結論
+## 六、延伸討論
+
+### 6.1 AutoML 能設計「前後層不同」的架構嗎？
+
+假設想讓 5 層 Transformer 中，前三層和後兩層採用不同的設計：
+
+```
+Layer 1 ─┐
+Layer 2  ├─ 前三層：attn_dropout=0.3，heads=16
+Layer 3 ─┘
+Layer 4 ─┐
+Layer 5  ┘─ 後兩層：attn_dropout=0.1，heads=8
+```
+
+**情況一：沒有預先定義 → AutoML 完全做不到**
+
+HPO 預設所有層共用同一組超參數，它根本不知道「層之間可以不同」這件事：
+
+```python
+attn_dropout = trial.suggest_float("attn_dropout", 0.0, 0.3)
+# 所有層套同一個值，無法自行問出「要不要讓每層獨立？」
+```
+
+**情況二：有預先定義 → AutoML 可以搜尋，但搜尋空間爆炸**
+
+```python
+for i in range(5):
+    dropout_i = trial.suggest_float(f"attn_dropout_layer{i}", 0.0, 0.3)
+```
+
+即使這樣定義，搜尋空間變成原來的 5 次方，需要更多實驗才能收斂。而且「要這樣問」這個想法本身，仍然是人先想出來的。
+
+**核心限制：AutoML 回答的是「在這個設計空間裡哪組數值最好」，但「設計空間的邊界應該畫在哪裡」，AutoML 無法自己決定。**
+
+---
+
+### 6.2 有 Model Size 約束時，AutoML 的根本弱點
+
+本次作業有 1 MB 的硬性限制，這個場景完整暴露了 AutoML 的另一個根本弱點：
+
+**AutoML 把約束當作事後濾網：**
+
+```
+NAS 流程：
+  生成架構 A → 訓練 10 epoch → 測 size → 1.5MB ❌ discard（浪費）
+  生成架構 B → 訓練 10 epoch → 測 size → 0.8MB ✅ 記錄
+  生成架構 C → 訓練 10 epoch → 測 size → 1.2MB ❌ discard（浪費）
+```
+
+大量實驗資源浪費在「訓練完才發現超過限制」上，而且它不知道如何把剩餘 budget 用在刀口上。
+
+**Autoresearch 把約束當作設計資源：**
+
+```
+本次實驗後期的推理過程：
+  「目前 1,018,731 bytes，剩餘預算 29,845 bytes」
+       ↓
+  「head_dim=5 需要多 114,688 bytes → 超預算，直接排除，不浪費一次實驗」
+       ↓
+  「attn_dropout 是超參數，佔 0 bytes → 重點探索方向」
+       ↓
+  「第 8 層需要多 133,120 bytes → 超預算，排除」
+       ↓
+  「結論：剩餘預算只夠探索不佔 size 的旋鈕（dropout 值、init 方式）」
+```
+
+這種**在約束框架內主動推理最優路徑**的能力，AutoML 目前完全做不到。
+
+| | NAS/AutoML | Autoresearch |
+|---|---|---|
+| 對待 size 限制 | 事後二元過濾（pass/fail） | 事前資源分配（budget planning） |
+| 遇到超限 | discard，再重新隨機 | 計算「哪些改動在預算內」後才決定試什麼 |
+| 搜尋方向引導 | 不受 size 影響 | **主動往不佔 size 的方向集中探索** |
+| 對「免費改動」的認識 | 無 | ✅ 明確知道 dropout 值不佔任何 size |
+
+**本次最後階段的突破（attn_dropout 0.20→0.22，+0.73 pp）就是這個邏輯的直接體現**：在預算耗盡的情況下，autoresearch 知道只能動「不花 size 的旋鈕」，因而集中火力把 attn_dropout 調到精確最優值。AutoML 在這個場景下，要麼撞牆（超 size）要麼隨機亂試，不會有這樣的推理。
+
+---
+
+## 七、結論
 
 本次實驗說明 **autoresearch 與 AutoML 是互補而非替代的關係**：
 
