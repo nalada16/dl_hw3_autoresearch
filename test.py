@@ -218,6 +218,11 @@ model = myViT(
     num_classes = num_classes,
 ).to(device)
 
+# Smaller-variance init for CLS + positional embedding (default torch.randn is std=1, too large)
+with torch.no_grad():
+    nn.init.normal_(model.cls_token,     std=0.02)
+    nn.init.normal_(model.pos_embedding, std=0.02)
+
 # 模型大小確認（目標 < 1MB = 250K params）
 total_params = sum(p.numel() for p in model.parameters())
 size_mb = total_params * 4 / (1024 ** 2)
