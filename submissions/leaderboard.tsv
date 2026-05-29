@@ -1,6 +1,6 @@
 accuracy	size_mb	size_bytes	commit	pt_file	csv_file	description
-0.6599	0.972	1018731	cd97b79	submissions\r14725055_acc0.6599_cd97b79.pt	submissions\r14725055_acc0.6599_cd97b79.csv	7L heads=16 attn=0.22 trans=0.05 new best
-0.6526	0.972	1018731	aba9c99	submissions\r14725055_acc0.6526_aba9c99.pt	submissions\r14725055_acc0.6526_aba9c99.csv	7L heads=16 attn=0.20 trans=0.05
-0.6522	0.972	1018731	431d87d	submissions\r14725055_acc0.6522_431d87d.pt	submissions\r14725055_acc0.6522_431d87d.csv	7L heads=16 head_dim=4 attn=0.15 trans=0.05 synergy
-0.6511	0.972	1018731	8c5f16c	submissions\r14725055_acc0.6511_8c5f16c.pt	submissions\r14725055_acc0.6511_8c5f16c.csv	7L attn_dropout=0.15 transformer_dropout=0.05 asymmetric
-0.6508	0.972	1018731	0777c31	submissions\r14725055_acc0.6508_0777c31.pt	submissions\r14725055_acc0.6508_0777c31.csv	7L mlp=128 attn_dropout=0.15 std=0.02 init
+0.6879	0.990	1037586	9f07902	submissions\r14725055_acc0.6879_9f07902.pt	submissions\r14725055_acc0.6879_9f07902.csv	seed=71 lucky reproducible +0.28pp
+0.6851	0.990	1037586	4332098	submissions\r14725055_acc0.6851_4332098.pt	submissions\r14725055_acc0.6851_4332098.csv	seed=11 lucky reproducible new best +0.09pp
+0.6842	0.990	1037586	dd926d4	submissions\r14725055_acc0.6842_dd926d4.pt	submissions\r14725055_acc0.6842_dd926d4.csv	9L mlp=72 +0.83pp depth scaling unlocked by embed fix
+0.6759	0.979	1026201	24615ab	submissions\r14725055_acc0.6759_24615ab.pt	submissions\r14725055_acc0.6759_24615ab.csv	8L mlp=96 embed-fix depth helps after noise removal
+0.6752	0.972	1018731	26762fc	submissions\r14725055_acc0.6752_26762fc.pt	submissions\r14725055_acc0.6752_26762fc.csv	embedding init std=0.02 +1.53pp new best

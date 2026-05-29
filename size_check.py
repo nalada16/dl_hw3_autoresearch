@@ -39,9 +39,9 @@ PATCH_SIZE  = 4
 NUM_CLASSES = 10
 
 # Current best config — update this after each new "keep"
-BASELINE = dict(layers=7, heads=16, head_dim=4, mlp_dim=128, hidden_dim=64)
-BASELINE_COMMIT = "cd97b79"
-BASELINE_ACC    = 0.6599
+BASELINE = dict(layers=9, heads=16, head_dim=4, mlp_dim=72, hidden_dim=64)
+BASELINE_COMMIT = "dd926d4"
+BASELINE_ACC    = 0.6842
 
 
 # ── Model classes (same as test.py, no training side-effects) ────────────────

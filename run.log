@@ -1,85 +1,85 @@
 warning: `VIRTUAL_ENV=C:\Users\涓嬮潰涓�浣峔AppData\Local\Programs\Python\Python313` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
 Using device: cuda
-把计秖: 241,322
-家: 0.921 MB
-	Epoch 0 | Batch 0 | Loss 2.2089
-	Epoch 0 | Batch 500 | Loss 2.0179
-	Epoch 0 | Batch 1000 | Loss 1.9076
-	Epoch 0 | Batch 1500 | Loss 2.0727
-	Epoch 0 | Batch 2000 | Loss 1.9896
-	Epoch 0 | Batch 2500 | Loss 1.7635
-	Epoch 0 | Batch 3000 | Loss 1.7412
-Epoch 0 | Loss 1.7694
-	Epoch 1 | Batch 0 | Loss 1.7304
-	Epoch 1 | Batch 500 | Loss 1.6760
-	Epoch 1 | Batch 1000 | Loss 2.0149
-	Epoch 1 | Batch 1500 | Loss 1.4324
-	Epoch 1 | Batch 2000 | Loss 1.4969
-	Epoch 1 | Batch 2500 | Loss 1.4003
-	Epoch 1 | Batch 3000 | Loss 1.5023
-Epoch 1 | Loss 1.4156
-	Epoch 2 | Batch 0 | Loss 0.9517
-	Epoch 2 | Batch 500 | Loss 0.9337
-	Epoch 2 | Batch 1000 | Loss 1.3597
-	Epoch 2 | Batch 1500 | Loss 1.6068
-	Epoch 2 | Batch 2000 | Loss 1.2497
-	Epoch 2 | Batch 2500 | Loss 1.2289
-	Epoch 2 | Batch 3000 | Loss 0.5636
-Epoch 2 | Loss 1.2633
-	Epoch 3 | Batch 0 | Loss 1.1572
-	Epoch 3 | Batch 500 | Loss 1.3606
-	Epoch 3 | Batch 1000 | Loss 0.9545
-	Epoch 3 | Batch 1500 | Loss 1.1674
-	Epoch 3 | Batch 2000 | Loss 1.4714
-	Epoch 3 | Batch 2500 | Loss 0.7878
-	Epoch 3 | Batch 3000 | Loss 0.6870
-Epoch 3 | Loss 1.1618
-	Epoch 4 | Batch 0 | Loss 0.8676
-	Epoch 4 | Batch 500 | Loss 1.0276
-	Epoch 4 | Batch 1000 | Loss 1.1531
-	Epoch 4 | Batch 1500 | Loss 0.8166
-	Epoch 4 | Batch 2000 | Loss 1.0782
-	Epoch 4 | Batch 2500 | Loss 1.1197
-	Epoch 4 | Batch 3000 | Loss 1.3953
-Epoch 4 | Loss 1.0828
-	Epoch 5 | Batch 0 | Loss 1.0735
-	Epoch 5 | Batch 500 | Loss 1.2449
-	Epoch 5 | Batch 1000 | Loss 0.9278
-	Epoch 5 | Batch 1500 | Loss 0.8451
-	Epoch 5 | Batch 2000 | Loss 1.1224
-	Epoch 5 | Batch 2500 | Loss 0.8208
-	Epoch 5 | Batch 3000 | Loss 1.2598
-Epoch 5 | Loss 1.0143
-	Epoch 6 | Batch 0 | Loss 0.7579
-	Epoch 6 | Batch 500 | Loss 1.3264
-	Epoch 6 | Batch 1000 | Loss 1.1092
-	Epoch 6 | Batch 1500 | Loss 0.8570
-	Epoch 6 | Batch 2000 | Loss 1.2781
-	Epoch 6 | Batch 2500 | Loss 0.9851
-	Epoch 6 | Batch 3000 | Loss 1.0663
-Epoch 6 | Loss 0.9596
-	Epoch 7 | Batch 0 | Loss 0.7180
-	Epoch 7 | Batch 500 | Loss 1.3511
-	Epoch 7 | Batch 1000 | Loss 0.8911
-	Epoch 7 | Batch 1500 | Loss 0.7159
-	Epoch 7 | Batch 2000 | Loss 0.5639
-	Epoch 7 | Batch 2500 | Loss 0.6524
-	Epoch 7 | Batch 3000 | Loss 1.0753
-Epoch 7 | Loss 0.9133
-	Epoch 8 | Batch 0 | Loss 0.5016
-	Epoch 8 | Batch 500 | Loss 0.9964
-	Epoch 8 | Batch 1000 | Loss 0.7687
-	Epoch 8 | Batch 1500 | Loss 0.6029
-	Epoch 8 | Batch 2000 | Loss 0.7750
-	Epoch 8 | Batch 2500 | Loss 2.0156
-	Epoch 8 | Batch 3000 | Loss 1.0976
-Epoch 8 | Loss 0.8694
-	Epoch 9 | Batch 0 | Loss 0.5396
-	Epoch 9 | Batch 500 | Loss 1.2487
-	Epoch 9 | Batch 1000 | Loss 0.7690
-	Epoch 9 | Batch 1500 | Loss 0.2897
-	Epoch 9 | Batch 2000 | Loss 0.6972
-	Epoch 9 | Batch 2500 | Loss 0.6969
-	Epoch 9 | Batch 3000 | Loss 0.6930
-Epoch 9 | Loss 0.8307
-Accuracy: 0.6563
+把计秖: 242,866
+家: 0.926 MB
+	Epoch 0 | Batch 0 | Loss 2.3801
+	Epoch 0 | Batch 500 | Loss 2.0591
+	Epoch 0 | Batch 1000 | Loss 2.0434
+	Epoch 0 | Batch 1500 | Loss 1.5995
+	Epoch 0 | Batch 2000 | Loss 1.6410
+	Epoch 0 | Batch 2500 | Loss 1.6077
+	Epoch 0 | Batch 3000 | Loss 1.1111
+Epoch 0 | Loss 1.6846
+	Epoch 1 | Batch 0 | Loss 1.6603
+	Epoch 1 | Batch 500 | Loss 1.3067
+	Epoch 1 | Batch 1000 | Loss 1.1056
+	Epoch 1 | Batch 1500 | Loss 1.7742
+	Epoch 1 | Batch 2000 | Loss 1.4543
+	Epoch 1 | Batch 2500 | Loss 1.1020
+	Epoch 1 | Batch 3000 | Loss 1.4319
+Epoch 1 | Loss 1.3145
+	Epoch 2 | Batch 0 | Loss 1.0536
+	Epoch 2 | Batch 500 | Loss 0.8300
+	Epoch 2 | Batch 1000 | Loss 1.1146
+	Epoch 2 | Batch 1500 | Loss 1.3933
+	Epoch 2 | Batch 2000 | Loss 1.1151
+	Epoch 2 | Batch 2500 | Loss 1.2516
+	Epoch 2 | Batch 3000 | Loss 1.3052
+Epoch 2 | Loss 1.1649
+	Epoch 3 | Batch 0 | Loss 0.7407
+	Epoch 3 | Batch 500 | Loss 1.1968
+	Epoch 3 | Batch 1000 | Loss 1.3237
+	Epoch 3 | Batch 1500 | Loss 0.7104
+	Epoch 3 | Batch 2000 | Loss 1.2785
+	Epoch 3 | Batch 2500 | Loss 1.3247
+	Epoch 3 | Batch 3000 | Loss 1.4691
+Epoch 3 | Loss 1.0739
+	Epoch 4 | Batch 0 | Loss 1.2588
+	Epoch 4 | Batch 500 | Loss 0.7577
+	Epoch 4 | Batch 1000 | Loss 1.7309
+	Epoch 4 | Batch 1500 | Loss 0.9595
+	Epoch 4 | Batch 2000 | Loss 0.8868
+	Epoch 4 | Batch 2500 | Loss 1.2122
+	Epoch 4 | Batch 3000 | Loss 1.3026
+Epoch 4 | Loss 1.0009
+	Epoch 5 | Batch 0 | Loss 0.9755
+	Epoch 5 | Batch 500 | Loss 1.0462
+	Epoch 5 | Batch 1000 | Loss 1.0649
+	Epoch 5 | Batch 1500 | Loss 0.9331
+	Epoch 5 | Batch 2000 | Loss 1.0547
+	Epoch 5 | Batch 2500 | Loss 1.2267
+	Epoch 5 | Batch 3000 | Loss 1.2050
+Epoch 5 | Loss 0.9427
+	Epoch 6 | Batch 0 | Loss 1.0629
+	Epoch 6 | Batch 500 | Loss 0.6119
+	Epoch 6 | Batch 1000 | Loss 0.8441
+	Epoch 6 | Batch 1500 | Loss 0.9156
+	Epoch 6 | Batch 2000 | Loss 0.7954
+	Epoch 6 | Batch 2500 | Loss 0.9161
+	Epoch 6 | Batch 3000 | Loss 0.6280
+Epoch 6 | Loss 0.8907
+	Epoch 7 | Batch 0 | Loss 0.4111
+	Epoch 7 | Batch 500 | Loss 0.5434
+	Epoch 7 | Batch 1000 | Loss 0.5953
+	Epoch 7 | Batch 1500 | Loss 1.1245
+	Epoch 7 | Batch 2000 | Loss 0.5367
+	Epoch 7 | Batch 2500 | Loss 0.5168
+	Epoch 7 | Batch 3000 | Loss 1.0099
+Epoch 7 | Loss 0.8510
+	Epoch 8 | Batch 0 | Loss 0.9865
+	Epoch 8 | Batch 500 | Loss 1.6343
+	Epoch 8 | Batch 1000 | Loss 0.8416
+	Epoch 8 | Batch 1500 | Loss 1.3835
+	Epoch 8 | Batch 2000 | Loss 0.4575
+	Epoch 8 | Batch 2500 | Loss 0.8421
+	Epoch 8 | Batch 3000 | Loss 0.7150
+Epoch 8 | Loss 0.8095
+	Epoch 9 | Batch 0 | Loss 0.5609
+	Epoch 9 | Batch 500 | Loss 0.7599
+	Epoch 9 | Batch 1000 | Loss 0.3330
+	Epoch 9 | Batch 1500 | Loss 0.7717
+	Epoch 9 | Batch 2000 | Loss 0.8599
+	Epoch 9 | Batch 2500 | Loss 0.3768
+	Epoch 9 | Batch 3000 | Loss 1.2178
+Epoch 9 | Loss 0.7731
+Accuracy: 0.6619
