@@ -16,9 +16,9 @@ keep or discard → repeat, autonomously, until the human stops you.
   - Model size 15%: 5% if `.pt` < **1 MB**, 10% by class ranking (smaller = better).
   - Accuracy 15%: 5% if test acc > **57%**, 10% by class ranking (higher = better).
   - Accuracy on a hidden "another dataset" 10%: by class ranking.
-- The current baseline `.pt` is ~1.77 MB (OVER the limit) at ~60.8% accuracy. The single
-  biggest size waste is `head_dim=64` with `hidden_dim=64` → `inner_dim=256`, which inflates
-  the QKV/out projections ~4×. Getting under 1 MB is the first priority.
+- Current best accuracy: **68.42%** (unseeded, `.pt` ~0.986 MB, comfortably under the 1 MB
+  cap). The Kaggle public leaderboard top score is ~**77%**, so there is significant room to
+  improve. The model is already budget-efficient; the focus is purely on accuracy gains.
 
 ## Setup
 
@@ -52,10 +52,10 @@ in under one second — far faster than running a full training to discover the 
 
 ```bash
 # Check a specific config (auto-compares vs current best)
-uv run size_check.py --layers 7 --heads 16 --head_dim 4 --mlp 128
+uv run size_check.py --layers 9 --heads 16 --head_dim 4 --mlp 80
 
 # See param count broken down by component
-uv run size_check.py --layers 7 --heads 16 --head_dim 4 --mlp 128 --breakdown
+uv run size_check.py --layers 9 --heads 16 --head_dim 4 --mlp 80 --breakdown
 
 # Scan a grid — shows all configs that fit under 1 MB
 uv run size_check.py --scan
@@ -109,6 +109,15 @@ model size, and accuracy.
   - `myAttention` must be scaled dot-product attention `softmax(QKᵀ/√d_k)V`. Multi-head is
     encouraged (keeps the +20% bonus). Don't regress to something that isn't real attention.
 - Install packages or add dependencies (only what's in `pyproject.toml`).
+- **Set any random seed** — `torch.manual_seed(...)`, `torch.cuda.manual_seed_all(...)`, or
+  any equivalent. Seed-searching exploits test-set randomness; it is not a genuine
+  architectural improvement and is forbidden. Every keep/discard decision must have a
+  mechanistic justification. "Accuracy happened to be higher" is not sufficient.
+- **Circumvent DO NOT MODIFY sections by any indirect means.** This includes: subclassing a
+  DO NOT MODIFY class and swapping the instance, monkey-patching methods at runtime, calling
+  a DO NOT MODIFY function from a MODIFIABLE section in a way that alters its behavior, or
+  wrapping DO NOT MODIFY code with logic that changes its inputs or outputs. If you are
+  unsure whether a change crosses this line, assume it does and don't do it.
 
 **The goal:** **maximize CIFAR-10 test accuracy** subject to the **hard constraint** that the
 saved `.pt` file is **< 1 MB (1,048,576 bytes)**. A run whose `.pt` ≥ 1 MB is a FAIL regardless
@@ -216,20 +225,25 @@ near-misses, try more radical architecture changes. The loop runs until interrup
 
 ### Idea bank (non-exhaustive)
 
-First priority — get under 1 MB (baseline is 1.77 MB):
-- Set `head_dim ≈ hidden_dim // heads` so `inner_dim ≈ hidden_dim` (the baseline's
-  `head_dim=64`, `hidden_dim=64` makes `inner_dim=256`, ~4× the QKV/out cost). This alone
-  should drop well under 1 MB.
-- Reduce `hidden_dim` (e.g. 48, 64) and/or `mlp_dim`.
+The model is already under 1 MB. The only goal is accuracy improvement within the budget.
+Use `uv run size_check.py` before committing any change that affects model dimensions.
 
-Then climb accuracy within the budget:
-- Number of transformer layers (`num_layers` in Part 7): try 3–8. Deeper isn't always better
-  with only 10 epochs.
-- `mlp_dim` as 1×–4× `hidden_dim`.
-- Dropout rate in Part 7 (and optionally attention dropout in Part 6): 0.0–0.2.
-- Pre-LN vs Post-LN; final LayerNorm on/off.
-- `heads` count (4 vs 8) with `head_dim` tuned to keep `inner_dim` modest.
-- Untie `head_dim` from `hidden_dim//heads` slightly to trade size for capacity.
-- Combine the best near-misses; push size down to free budget for more depth/width.
+Architectural dimensions to explore:
+- Number of transformer layers (`num_layers` in Part 7): current is 9. Verify budget before
+  increasing.
+- `mlp_dim`: current is 72. Higher values cost bytes; check budget first.
+- `heads` and `head_dim`: current is 16 heads × 4 dim = inner 64. Alternative ratios may
+  capture different attention patterns.
+- `hidden_dim`: current is 64. Both directions carry risk — verify carefully.
+- Dropout: `attn_dropout` (current 0.22) and residual dropout (current 0.05) in Part 7.
+  Per-layer schedules, annealing, or asymmetric application are all fair game.
+- Normalization placement: Pre-LN (current) vs Post-LN vs sandwich. The final LayerNorm
+  in the transformer can be removed or moved.
+- Attention internals (Part 6): weight initialization, projection structure, dropout placement.
+- FFN internals (Part 5): regularization between the two Linear layers, weight initialization.
+  Remember: `FFN(x) = max(0, xW1+b1)W2+b2` — the ReLU is required.
+- Initialization strategy (Part 9): how `cls_token`, `pos_embedding`, QKV weights, and the
+  classifier head are initialized can meaningfully affect convergence in 10 epochs.
+- Combining multiple small changes that individually seem minor can sometimes compound.
 
-Goal recap: smallest path to the highest test accuracy **under 1 MB**.
+Goal: highest test accuracy **under 1 MB** through genuine, mechanistically-justified changes.
