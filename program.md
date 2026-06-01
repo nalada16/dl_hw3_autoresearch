@@ -72,6 +72,31 @@ or `hidden_dim` (e.g. pure dropout value changes, init changes) cost 0 bytes —
 **After a new KEEP**: update `BASELINE`, `BASELINE_COMMIT`, `BASELINE_ACC` in `size_check.py`
 so future comparisons stay anchored to the new best.
 
+### `analyze.py` — post-run analysis
+
+Run immediately after each `test.py` completes:
+
+```bash
+uv run analyze.py
+```
+
+Outputs two sections that help guide the next experiment:
+
+**1. Training loss curve** (parsed from `run.log`):
+- Shows per-epoch average loss as an ASCII bar chart.
+- Key signal: if loss is still falling sharply at epoch 9, the model is
+  underfitting — try more depth or wider dimensions.
+- If loss is flat by epoch 6-7, the architecture has converged and further
+  capacity gains are unlikely to help.
+
+**2. Per-class accuracy** (from `r14725055_submission.csv` + CIFAR-10 test labels):
+- Shows each of the 10 classes sorted by accuracy, best to worst.
+- `cat` and `dog` tend to be hardest (visually similar, texture-dependent).
+- Use this to track which classes a change helps or hurts — a good change
+  should lift the weakest classes, not just the already-strong ones.
+- Large spread (>40pp between best and worst) suggests the model is biased
+  toward easy classes; a smaller spread suggests more balanced representations.
+
 ### `archive_topk.py` — top-K submission archiver
 
 ```bash
@@ -200,6 +225,12 @@ LOOP FOREVER:
 7. If the grep is empty, the run crashed. `tail -n 50 run.log` to read the traceback. If it's
    trivial (typo, einops pattern, shape off-by-one), fix and re-run. If the idea is
    fundamentally broken, log `crash` and move on.
+7b. **Run analysis**: `uv run analyze.py`. Read the loss curve and per-class accuracy.
+    Use these to inform the keep/discard decision and to design the next experiment:
+    - Loss still falling at epoch 9? -> model is underfitting; try more capacity.
+    - Loss flat by epoch 6? -> converged; focus on regularization or architecture changes.
+    - Which classes improved vs degraded? A change that only helps strong classes
+      while hurting weak ones is not a genuine improvement.
 8. Record the result in `results.tsv`.
 8b. **Archive for top-K** (any run, not only "keep"): if the `.pt` is < 1 MB, snapshot it:
     `uv run archive_topk.py --acc <acc> --commit <hash> --desc "<short desc>"`
